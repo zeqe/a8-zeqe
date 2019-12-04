@@ -1,6 +1,6 @@
 package a8;
 
-public class Controller implements ViewPanelListener{
+public class Controller implements ViewPanelListener, ViewMouseListener{
 	private Model model;
 	private ViewPanel view;
 	
@@ -13,6 +13,7 @@ public class Controller implements ViewPanelListener{
 		this.view = view;
 		
 		view.setListener(this);
+		view.setViewClickListener(this);
 		view.setValues(model.getValues());
 	}
 	
@@ -49,5 +50,14 @@ public class Controller implements ViewPanelListener{
 	public void stepButtonEvent(){
 		model.stepCells();
 		view.setValues(model.getValues());
+	}
+	
+	// View Mouse Listener Implementation
+	public void registerClick(int x,int y){
+		if(model.getCell(x,y)){
+			model.setCell(x,y,false);
+		}else{
+			model.setCell(x,y,true);
+		}
 	}
 }

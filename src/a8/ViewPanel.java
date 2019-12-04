@@ -125,6 +125,10 @@ public class ViewPanel extends JPanel implements ActionListener{
 		listener = newListener;
 	}
 	
+	public void setViewClickListener(ViewMouseListener newListener){
+		viewer.setClickListener(newListener);
+	}
+	
 	public void setValues(boolean[] newValues){
 		viewer.setValues(newValues);
 	}

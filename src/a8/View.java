@@ -6,13 +6,18 @@ import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Color;
 
-public class View extends JPanel{
+import java.awt.event.MouseListener;
+import java.awt.event.MouseEvent;
+
+public class View extends JPanel implements MouseListener{
 	private final int MAX_PANEL_DIMENSIONS = 500;
 	
 	private int cellSize;
 	private int width,height;
 	
 	private boolean[] values;
+	
+	private ViewMouseListener clickListener;
 	
 	public View(int width,int height){
 		if(width < 1 || height < 1){
@@ -53,7 +58,33 @@ public class View extends JPanel{
 		}
 	}
 	
+	public void setClickListener(ViewMouseListener newListener){
+		clickListener = newListener;
+	}
+	
 	public void setValues(boolean[] newValues){
 		values = newValues;
+	}
+	
+	// Mouse Listener implementation, including obligatory empty methods
+	public void mouseClicked(MouseEvent e){
+		
+	}
+	
+	public void mouseEntered(MouseEvent e){
+		
+	}
+	
+	public void mouseExited(MouseEvent e){
+		
+	}
+	
+	public void mousePressed(MouseEvent e){
+		System.out.println(e.getX() + " " + e.getY());
+		clickListener.registerClick(e.getX() / cellSize,e.getY() / cellSize);
+	}
+	
+	public void mouseReleased(MouseEvent e){
+		
 	}
 }
