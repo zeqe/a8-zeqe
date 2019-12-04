@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>a8-zeqe</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>org.eclipse.jdt.core.javabuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>org.eclipse.jdt.core.javanature</nature>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>src/a8/Options.java</name>
+			<type>1</type>
+			<location>C:/Users/zeque/git/a8-zeqe/src/a8/Options.java</location>
+		</link>
+		<link>
+			<name>src/a8/ViewPanel.java</name>
+			<type>1</type>
+			<location>C:/Users/zeque/git/a8-zeqe/src/a8/ViewPanel.java</location>
+		</link>
+		<link>
+			<name>src/a8/ViewPanelListener.java</name>
+			<type>1</type>
+			<location>C:/Users/zeque/git/a8-zeqe/src/a8/ViewPanelListener.java</location>
+		</link>
+	</linkedResources>
+</projectDescription>
