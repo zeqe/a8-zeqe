@@ -18,6 +18,8 @@ import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
 
+import java.awt.Color;
+
 public class ViewPanel extends JPanel implements ActionListener{
 	private final int STRUT_VALUE = 10;
 	
@@ -96,12 +98,11 @@ public class ViewPanel extends JPanel implements ActionListener{
 		controls.add(stepButton);
 		
 		viewer = new View(width,height);
-		viewer.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
-		setLayout(new BorderLayout());
+		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		
-		add(controls,BorderLayout.SOUTH);
-		add(viewer,BorderLayout.CENTER);
+		add(viewer);
+		add(controls);
 	}
 	
 	public void actionPerformed(ActionEvent e){

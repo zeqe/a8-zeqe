@@ -32,6 +32,8 @@ public class View extends JPanel implements MouseListener{
 		this.height = height;
 		
 		setPreferredSize(new Dimension(width * cellSize,height * cellSize));
+		setMaximumSize(new Dimension(width * cellSize,height * cellSize));
+		
 		addMouseListener(this);
 	}
 	
