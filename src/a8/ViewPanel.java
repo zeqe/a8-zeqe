@@ -148,7 +148,7 @@ public class ViewPanel extends JPanel implements ActionListener{
 			listener.stepButtonEvent();
 		}else if(e.getSource() == playButton) {
 			// Fancy animations!
-			listener.toggleAnimation();
+			listener.toggleAnimation(animationDelay.getValue());
 			
 			// Toggle all other buttons to prevent race conditions while animating
 			birthLowThreshold.setEnabled(!listener.isAnimating());
@@ -169,8 +169,6 @@ public class ViewPanel extends JPanel implements ActionListener{
 				playButton.setText("Play");
 			}
 		}
-		
-		viewer.repaint();
 	}
 	
 	public void setListener(ViewPanelListener newListener){

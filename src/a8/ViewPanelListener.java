@@ -7,6 +7,7 @@ public interface ViewPanelListener{
 	void noiseFillButtonEvent();
 	void stepButtonEvent();
 	
-	void toggleAnimation();
+	void toggleAnimation(int delayValue);
 	boolean isAnimating();
+	boolean shouldStopAnimating();
 }

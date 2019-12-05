@@ -4,7 +4,8 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 	private Model model;
 	private ViewPanel view;
 	
-	private boolean isPlaying;
+	private boolean animationShouldStop;
+	private AnimationThread animation;
 	
 	public Controller(Model model,ViewPanel view){
 		if(model == null || view == null){
@@ -14,7 +15,7 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 		this.model = model;
 		this.view = view;
 		
-		this.isPlaying = false;
+		this.animationShouldStop = false;
 		
 		view.setListener(this);
 		view.setViewClickListener(this);
@@ -41,6 +42,8 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 				model.setCell(x,y,false);
 			}
 		}
+		
+		view.repaint();
 	}
 	
 	public void noiseFillButtonEvent(){
@@ -49,11 +52,14 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 				model.setCell(x,y,Math.random() < 0.5);
 			}
 		}
+		
+		view.repaint();
 	}
 	
 	public void stepButtonEvent(){
 		model.stepCells();
 		view.setValues(model.getValues());
+		view.repaint();
 	}
 	
 	// View Mouse Listener Implementation
@@ -63,13 +69,40 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 		}else{
 			model.setCell(x,y,true);
 		}
+		
+		view.repaint();
 	}
 	
-	public void toggleAnimation() {
-		isPlaying = !isPlaying;
+	public void toggleAnimation(int delayValue) {
+		if(isAnimating()) {
+			// Setting the signal to end execution
+			animationShouldStop = true;
+			
+			// Wait for the thread to end
+			try {
+				animation.join();
+			}catch(InterruptedException e) {
+				// Do nothing
+			}
+			
+			// Set variable to null so that animation state
+			// is guaranteed to be detected correctly, and so
+			// that JVM knows to GC.
+			animation = null;
+		}else {
+			// Starting a new animation thread otherwise
+			animationShouldStop = false;
+			
+			animation = new AnimationThread(delayValue,this);
+			animation.start();
+		}
 	}
 	
 	public boolean isAnimating() {
-		return isPlaying;
+		return animation != null;
+	}
+	
+	public boolean shouldStopAnimating() {
+		return animationShouldStop;
 	}
 }
