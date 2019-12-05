@@ -4,6 +4,8 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 	private Model model;
 	private ViewPanel view;
 	
+	private boolean isPlaying;
+	
 	public Controller(Model model,ViewPanel view){
 		if(model == null || view == null){
 			throw new IllegalArgumentException("Invalid model or view passed to controller.");
@@ -11,6 +13,8 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 		
 		this.model = model;
 		this.view = view;
+		
+		this.isPlaying = false;
 		
 		view.setListener(this);
 		view.setViewClickListener(this);
@@ -59,5 +63,13 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 		}else{
 			model.setCell(x,y,true);
 		}
+	}
+	
+	public void toggleAnimation() {
+		isPlaying = !isPlaying;
+	}
+	
+	public boolean isAnimating() {
+		return isPlaying;
 	}
 }

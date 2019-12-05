@@ -27,23 +27,25 @@ public class ViewPanel extends JPanel implements ActionListener{
 	private JSlider surviveLowThreshold,surviveHighThreshold;
 	
 	private JCheckBox torusMode;
-	private JButton clearButton,noiseFillButton,stepButton;
+	private JButton clearButton,noiseFillButton,stepButton,playButton;
+	
+	private JSlider animationDelay;
 	
 	private ViewPanelListener listener;
 	private View viewer;
 	
-	private JSlider generateSliderPanel(String title,int init,JPanel parent){
+	private JSlider generateSliderPanel(String title,int low,int high,int init,int minor,int major,JPanel parent){
 		// Title
 		JLabel sliderTitle = new JLabel(title);
 		sliderTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
 		
 		// Slider
 		JSlider newSlider = new JSlider();
-		newSlider.setMinimum(1);
-		newSlider.setMaximum(8);
+		newSlider.setMinimum(low);
+		newSlider.setMaximum(high);
 		newSlider.setValue(init);
-		newSlider.setMinorTickSpacing(1);
-		newSlider.setMajorTickSpacing(2);
+		newSlider.setMinorTickSpacing(minor);
+		newSlider.setMajorTickSpacing(major);
 		newSlider.setPaintTicks(true);
 		newSlider.setPaintLabels(true);
 		newSlider.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -66,39 +68,65 @@ public class ViewPanel extends JPanel implements ActionListener{
 			throw new IllegalArgumentException("Invalid dimensions.");
 		}
 		
-		JPanel controls = new JPanel();
-		controls.setLayout(new BoxLayout(controls,BoxLayout.X_AXIS));
-		controls.setBorder(BorderFactory.createEmptyBorder(STRUT_VALUE,STRUT_VALUE,STRUT_VALUE,STRUT_VALUE));
+		// Thresholds
+		JPanel thresholds = new JPanel();
+		thresholds.setLayout(new BoxLayout(thresholds,BoxLayout.X_AXIS));
 		
-		// Threshold Sliders
-		birthLowThreshold = generateSliderPanel("Birth Lower Threshold",3,controls);
-		birthHighThreshold = generateSliderPanel("Birth Upper Threshold",3,controls);
-		surviveLowThreshold = generateSliderPanel("Survival Lower Threshold",2,controls);
-		surviveHighThreshold = generateSliderPanel("Survival Upper Threshold",3,controls);
+		// Sliders
+		birthLowThreshold = generateSliderPanel("Birth Lower Threshold",0,8,3,1,2,thresholds);
+		birthHighThreshold = generateSliderPanel("Birth Upper Threshold",0,8,3,1,2,thresholds);
+		surviveLowThreshold = generateSliderPanel("Survival Lower Threshold",0,8,2,1,2,thresholds);
+		surviveHighThreshold = generateSliderPanel("Survival Upper Threshold",0,8,3,1,2,thresholds);
 		
-		// Checkboxes
-		torusMode = new JCheckBox("Torus Mode");
-		torusMode.setAlignmentX(Component.CENTER_ALIGNMENT);
-		controls.add(torusMode);
+		// Frame Modifiers
+		JPanel frameModifiers = new JPanel();
+		frameModifiers.setLayout(new BoxLayout(frameModifiers,BoxLayout.X_AXIS));
 		
 		// Buttons
 		clearButton = new JButton("Clear");
-		clearButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		clearButton.addActionListener(this);
-		controls.add(clearButton);
+		frameModifiers.add(clearButton);
 		
 		noiseFillButton = new JButton("Random");
-		noiseFillButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		noiseFillButton.addActionListener(this);
-		controls.add(noiseFillButton);
+		frameModifiers.add(noiseFillButton);
 		
+		// Simulation
+		JPanel simulation = new JPanel();
+		simulation.setLayout(new BoxLayout(simulation,BoxLayout.X_AXIS));
+		
+		// Button 1
 		stepButton = new JButton("Step");
-		stepButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 		stepButton.addActionListener(this);
-		controls.add(stepButton);
+		simulation.add(stepButton);
 		
+		// Checkbox
+		torusMode = new JCheckBox("Torus Mode");
+		simulation.add(torusMode);
+		
+		// Button 2
+		playButton = new JButton("Play");
+		playButton.addActionListener(this);
+		simulation.add(playButton);
+		
+		// Slider
+		animationDelay = generateSliderPanel("Animation Delay (milliseconds)",10,1000,10,10,90,simulation);
+		
+		// Putting all the panels together into one
+		JPanel controls = new JPanel();
+		controls.setLayout(new BoxLayout(controls,BoxLayout.Y_AXIS));
+		controls.setBorder(BorderFactory.createEmptyBorder(STRUT_VALUE,STRUT_VALUE,STRUT_VALUE,STRUT_VALUE));
+		
+		controls.add(thresholds);
+		controls.add(Box.createVerticalStrut(STRUT_VALUE));
+		controls.add(frameModifiers);
+		controls.add(Box.createVerticalStrut(STRUT_VALUE));
+		controls.add(simulation);
+		
+		// Viewer
 		viewer = new View(width,height);
 		
+		// Final Composition
 		setLayout(new BoxLayout(this,BoxLayout.Y_AXIS));
 		
 		add(viewer);
@@ -106,7 +134,8 @@ public class ViewPanel extends JPanel implements ActionListener{
 	}
 	
 	public void actionPerformed(ActionEvent e){
-		if(e.getSource() == clearButton || e.getSource() == noiseFillButton || e.getSource() == stepButton){
+		if(e.getSource() == clearButton || e.getSource() == noiseFillButton ||
+			e.getSource() == stepButton || e.getSource() == playButton){
 			listener.applySettings(torusMode.isSelected(),
 				birthLowThreshold.getValue(),birthHighThreshold.getValue(),surviveLowThreshold.getValue(),surviveHighThreshold.getValue());
 		}
@@ -117,6 +146,28 @@ public class ViewPanel extends JPanel implements ActionListener{
 			listener.noiseFillButtonEvent();
 		}else if(e.getSource() == stepButton){
 			listener.stepButtonEvent();
+		}else if(e.getSource() == playButton) {
+			// Fancy animations!
+			listener.toggleAnimation();
+			
+			// Toggle all other buttons to prevent race conditions while animating
+			birthLowThreshold.setEnabled(!listener.isAnimating());
+			birthHighThreshold.setEnabled(!listener.isAnimating());
+			surviveLowThreshold.setEnabled(!listener.isAnimating());
+			surviveHighThreshold.setEnabled(!listener.isAnimating());
+			
+			clearButton.setEnabled(!listener.isAnimating());
+			noiseFillButton.setEnabled(!listener.isAnimating());
+			
+			stepButton.setEnabled(!listener.isAnimating());
+			torusMode.setEnabled(!listener.isAnimating());
+			animationDelay.setEnabled(!listener.isAnimating());
+			
+			if(listener.isAnimating()) {
+				playButton.setText("Stop");
+			}else{
+				playButton.setText("Play");
+			}
 		}
 		
 		viewer.repaint();
