@@ -4,16 +4,20 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 	private Model model;
 	private ViewPanel view;
 	
+	private boolean mouseWhileAnimating;
+	
 	private boolean animationShouldStop;
 	private AnimationThread animation;
 	
-	public Controller(Model model,ViewPanel view){
+	public Controller(Model model,ViewPanel view,boolean mouseWhileAnimating){
 		if(model == null || view == null){
 			throw new IllegalArgumentException("Invalid model or view passed to controller.");
 		}
 		
 		this.model = model;
 		this.view = view;
+		
+		this.mouseWhileAnimating = mouseWhileAnimating;
 		
 		this.animationShouldStop = false;
 		
@@ -62,17 +66,6 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 		view.repaint();
 	}
 	
-	// View Mouse Listener Implementation
-	public void registerClick(int x,int y){
-		if(model.getCell(x,y)){
-			model.setCell(x,y,false);
-		}else{
-			model.setCell(x,y,true);
-		}
-		
-		view.repaint();
-	}
-	
 	public void toggleAnimation(int delayValue) {
 		if(isAnimating()) {
 			// Setting the signal to end execution
@@ -104,5 +97,18 @@ public class Controller implements ViewPanelListener, ViewMouseListener{
 	
 	public boolean shouldStopAnimating() {
 		return animationShouldStop;
+	}
+	
+	// View Mouse Listener Implementation
+	public void registerClick(int x,int y){
+		if(!isAnimating() || mouseWhileAnimating) {
+			if(model.getCell(x,y)){
+				model.setCell(x,y,false);
+			}else{
+				model.setCell(x,y,true);
+			}
+			
+			view.repaint();
+		}
 	}
 }

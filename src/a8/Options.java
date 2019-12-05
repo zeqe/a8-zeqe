@@ -28,6 +28,7 @@ public class Options implements ActionListener{
 	
 	private JFrame optionsFrame;
 	private JSlider widthSlider,heightSlider;
+	private JCheckBox mouseWhileAnimating;
 	
 	public Options(){
 		// Dimension sliders label
@@ -58,6 +59,16 @@ public class Options implements ActionListener{
 		dimensionsPanel.add(new JLabel(" by "));
 		dimensionsPanel.add(heightSlider);
 		
+		// Adding a checkbox for a fun little option
+		mouseWhileAnimating = new JCheckBox("Allow mouse interaction while animating");
+		mouseWhileAnimating.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		// Description for that checkbox
+		JLabel mWADescription1 = new JLabel("It's unsafe due to race conditions, and may result in improper simulation,");
+		mWADescription1.setAlignmentX(Component.CENTER_ALIGNMENT);
+		JLabel mWADescription2 = new JLabel("BUT it's also super cool. Well, I think so, anyways.");
+		mWADescription2.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
 		// Play Button
 		JButton playButton = new JButton("Play");
 		playButton.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -73,6 +84,11 @@ public class Options implements ActionListener{
 		optionsPanel.add(slidersLabel);
 		optionsPanel.add(Box.createVerticalStrut(OPTIONS_STRUT_VALUE / 2));
 		optionsPanel.add(dimensionsPanel);
+		
+		optionsPanel.add(Box.createVerticalStrut(OPTIONS_STRUT_VALUE));
+		optionsPanel.add(mouseWhileAnimating);
+		optionsPanel.add(mWADescription1);
+		optionsPanel.add(mWADescription2);
 		
 		optionsPanel.add(Box.createVerticalStrut(OPTIONS_STRUT_VALUE));
 		optionsPanel.add(playButton);
@@ -96,7 +112,7 @@ public class Options implements ActionListener{
 		// MVC!!!!---------------------------------------------------------------------------------------------------------------------------
 		ViewPanel newPanel = new ViewPanel(widthSlider.getValue(),heightSlider.getValue());
 		Model newModel = new Model(widthSlider.getValue(),heightSlider.getValue());
-		Controller newController = new Controller(newModel,newPanel);
+		Controller newController = new Controller(newModel,newPanel,mouseWhileAnimating.isSelected());
 		
 		// Panel for the simulation content
 		JPanel panel = new JPanel();
