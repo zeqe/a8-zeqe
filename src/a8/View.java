@@ -32,6 +32,7 @@ public class View extends JPanel implements MouseListener{
 		this.height = height;
 		
 		setPreferredSize(new Dimension(width * cellSize,height * cellSize));
+		addMouseListener(this);
 	}
 	
 	@Override
@@ -80,8 +81,8 @@ public class View extends JPanel implements MouseListener{
 	}
 	
 	public void mousePressed(MouseEvent e){
-		System.out.println(e.getX() + " " + e.getY());
 		clickListener.registerClick(e.getX() / cellSize,e.getY() / cellSize);
+		repaint();
 	}
 	
 	public void mouseReleased(MouseEvent e){
